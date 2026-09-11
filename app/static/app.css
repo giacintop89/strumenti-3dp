@@ -340,7 +340,7 @@ summary:focus-visible,
   flex: none;
   align-self: stretch;
   width: 1px;
-  margin: 0.35rem 0;
+  margin: 0.35rem 0 0.35rem 0.25rem;
   background: var(--border);
 }
 

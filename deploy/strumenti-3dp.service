@@ -1,0 +1,29 @@
+[Unit]
+Description=Strumenti 3DP — guscio comune, nessuno strumento ancora deciso
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=giacintop89
+Group=giacintop89
+WorkingDirectory=/home/giacintop89/Repositories/strumenti-3dp
+Environment=STRUMENTI_3DP_HOST=0.0.0.0
+Environment=STRUMENTI_3DP_PORT=8084
+EnvironmentFile=-/home/giacintop89/Repositories/strumenti-3dp/config/.env
+# Un worker solo: SQLite serializza le scritture comunque, e a questa scala
+# worker in più non comprano niente.
+# Porta 8084: era svg2cam, ora libera e assegnata a Strumenti 3DP.
+# Gunicorn accetta le intestazioni del proxy soltanto dagli indirizzi indicati;
+# il default è 127.0.0.1, cioè Caddy sullo stesso Pi.
+ExecStart=/home/giacintop89/Repositories/strumenti-3dp/.venv/bin/gunicorn \
+    --bind ${STRUMENTI_3DP_HOST}:${STRUMENTI_3DP_PORT} --workers 1 app.main:app
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
