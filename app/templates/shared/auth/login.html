@@ -8,6 +8,9 @@
 
 {% block content %}
 <div class="auth-shell">
+  {# Il tema si cambia anche da fuori: chi lavora al buio non deve prima
+     entrare per spegnere la luce. #}
+  <div class="auth-top no-print">{% include "shared/partials/theme_toggle.html" %}</div>
   <div class="auth-logo">
     <h1>Strumenti 3DP</h1>
     <p>Un solo accesso per tutti gli strumenti della suite.</p>

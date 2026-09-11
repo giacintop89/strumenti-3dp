@@ -6,6 +6,21 @@
   <title>{% block title %}Strumenti 3DP{% endblock %} · Strumenti 3DP</title>
   <link rel="stylesheet" href="/static/app.css?v={{ ASSET_VERSION }}">
   <script>
+    // I temi, nell'ordine in cui il bottone li percorre. Il chiaro e' il
+    // default ed e' l'*assenza* dell'attributo, quindi non si scrive mai su <html>.
+    var STRUMENTI_3DP_THEMES = ['light', 'dark', 'contrast'];
+    // Gira prima del primo paint: applicare il tema salvato piu' tardi
+    // farebbe lampeggiare una pagina bianca a chi usa il tema scuro. Si applica
+    // solo un valore che conosciamo, cosi' una chiave vecchia o modificata a
+    // mano non puo' lasciare la pagina su un tema senza foglio di stile dietro.
+    (function () {
+      try {
+        var stored = localStorage.getItem('strumenti-3dp-theme');
+        if (stored && stored !== 'light' && STRUMENTI_3DP_THEMES.indexOf(stored) !== -1) {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+      } catch (e) { /* navigazione privata / storage spento: si resta sul chiaro */ }
+    })();
     // Il comando «Indietro» e' un vero collegamento alla home che questo
     // trasforma in un passo di cronologia. Torna indietro solo se la pagina
     // precedente era nostra: su un indirizzo digitato o un segnalibro non c'e'
@@ -20,6 +35,20 @@
         }
       } catch (e) { /* referrer malformato: si passa all'href */ }
       return true;
+    }
+    // Un bottone, tre temi in anello: chiaro → scuro → contrasto → chiaro.
+    // Un attributo sconosciuto cade su -1 e il passo successivo e' il primo
+    // tema, quindi nell'anello non si puo' entrare da dove non si esce.
+    function strumenti3dpToggleTheme() {
+      var root = document.documentElement;
+      var here = STRUMENTI_3DP_THEMES.indexOf(root.getAttribute('data-theme') || 'light');
+      var next = STRUMENTI_3DP_THEMES[(here + 1) % STRUMENTI_3DP_THEMES.length];
+      if (next === 'light') {
+        root.removeAttribute('data-theme');
+      } else {
+        root.setAttribute('data-theme', next);
+      }
+      try { localStorage.setItem('strumenti-3dp-theme', next); } catch (e) {}
     }
   </script>
   <script src="/static/htmx.min.js" defer></script>
@@ -51,6 +80,7 @@
   </div>
   <div class="session">
     {% include "shared/partials/app_switcher.html" %}
+    {% include "shared/partials/theme_toggle.html" %}
     {% include "shared/partials/user_menu.html" %}
   </div>
 </header>

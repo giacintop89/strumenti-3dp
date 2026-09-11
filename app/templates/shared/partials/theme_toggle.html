@@ -1,0 +1,32 @@
+{# Chiaro / scuro / contrasto elevato. Needs no server state: the choice lives in
+   localStorage and is applied by the inline script in base.html before first
+   paint.
+
+   One button cycling three themes rather than three controls: it is a decision
+   made once and then left alone. The icon names the theme you are in — sole,
+   luna, cerchio mezzo pieno — and the title says what pressing it does; which
+   one is showing is decided in app.css by `data-theme`, because with JavaScript
+   off nothing here changes and the CSS already knows the state.
+
+   I tre disegni sono quelli di note-condivise, tratto e non glifo: il sole del
+   carattere (☀) e' un asterisco magro che a 17px non si legge come un sole, e
+   cambiava forma da un carattere all'altro. Questi sono gli stessi tre in tutte
+   e tre le app. #}
+<button class="btn theme-toggle" type="button"
+        onclick="strumenti3dpToggleTheme()"
+        title="Cambia tema: chiaro, scuro, contrasto elevato"
+        aria-label="Cambia tema: chiaro, scuro, contrasto elevato">
+  <svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+  </svg>
+  <svg class="icon-dark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+  </svg>
+  <svg class="icon-contrast" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 3a9 9 0 000 18z" fill="currentColor" stroke="none" />
+  </svg>
+</button>
