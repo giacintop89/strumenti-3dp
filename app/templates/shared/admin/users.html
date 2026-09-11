@@ -1,0 +1,103 @@
+{% extends "shared/base.html" %}
+{% import "shared/macros.html" as m %}
+{% block title %}Utenti{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div><h1>Utenti
+    {{ m.info("Chi può entrare in Strumenti 3DP. Solo gli amministratori vedono questa pagina. Ogni persona deve avere il proprio account, perché lo storico degli strumenti registra chi ha creato ogni voce.") }}
+  </h1><div class="sub">{{ users | length }} account</div></div>
+</div>
+
+<div class="split">
+  <div class="card">
+    <h2><span>Account
+      {{ m.info("Un amministratore gestisce gli utenti. Chi non lavora più qui va disattivato, non cancellato: non entra più e il suo storico resta leggibile. Si elimina soltanto un account che non ha voci nello storico di nessuno strumento.") }}
+    </span></h2>
+    <div class="table-wrap">
+      {{ m.sort_bar(sort, [("email", "Email"), ("full_name", "Nome"),
+                         ("role", "Ruolo"), ("active", "Stato"),
+                         ("last_login_at", "Ultimo accesso")]) }}
+      <table class="data stacked">
+        <thead><tr>
+          {{ m.sort_th(sort, "email", "Email") }}
+          {{ m.sort_th(sort, "full_name", "Nome") }}
+          {{ m.sort_th(sort, "role", "Ruolo") }}
+          {{ m.sort_th(sort, "active", "Stato") }}
+          {{ m.sort_th(sort, "last_login_at", "Ultimo accesso") }}
+          <th>Nuova password</th><th></th>
+        </tr></thead>
+        <tbody>
+        {% for u in users %}
+          <tr>
+            <td class="mono key" data-label="Email">{{ u.email }}</td>
+            <td data-label="Nome">{{ u.full_name }}</td>
+            <td data-label="Ruolo"><span class="badge {{ 'info' if u.is_admin }}">{{ USER_ROLES.get(u.role, u.role) }}</span></td>
+            <td data-label="Stato">
+              {% if u.active %}<span class="badge ok">attivo</span>
+              {% else %}<span class="badge danger">disattivato</span>{% endif %}
+            </td>
+            <td data-label="Ultimo accesso">{{ u.last_login_at.strftime("%d/%m/%Y %H:%M") if u.last_login_at else "—" }}</td>
+            <td data-label="Nuova password">
+              <form method="post" action="/admin/utenti/{{ u.id }}/password" class="inline-form">
+                <input type="password" name="password" class="compact" placeholder="min 8 caratteri"
+                       minlength="8" required autocomplete="new-password">
+                <button class="btn btn-sm" type="submit">imposta</button>
+              </form>
+            </td>
+            <td class="shrink actions">
+              {% if u.id != user.id %}
+              <div class="pill-row">
+                <form method="post" action="/admin/utenti/{{ u.id }}/stato">
+                  <button class="btn-link small" type="submit">{{ 'disattiva' if u.active else 'attiva' }}</button>
+                </form>
+                {% set blocked = blockers.get(u.id) %}
+                {% if blocked %}
+                  <button class="btn-link small muted" type="button" disabled
+                          title="Ha voci nello storico di uno strumento: si può solo disattivare">elimina</button>
+                {% else %}
+                  <form method="post" action="/admin/utenti/{{ u.id }}/elimina"
+                        onsubmit="return confirm('Eliminare definitivamente «{{ u.email }}»?\n\nQuesto account non ha voci nello storico di nessuno strumento, quindi non si perde storico. Questa operazione non si può annullare.')">
+                    <button class="btn-link small" type="submit">elimina</button>
+                  </form>
+                {% endif %}
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span>Nuovo utente
+      {{ m.info("L'email serve per entrare e deve essere reale, unica e stabile. Nome e cognome sono obbligatori. La password deve avere almeno 8 caratteri.") }}
+    </span></h2>
+    <div class="card-body">
+      <form method="post" action="/admin/utenti">
+        <div class="field">
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" inputmode="email" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="full_name">Nome e cognome *</label>
+          <input id="full_name" name="full_name" maxlength="120" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="password">Password * <span class="muted">(min 8 caratteri)</span></label>
+          <input id="password" name="password" type="password" minlength="8" required autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="role">Ruolo</label>
+          <select id="role" name="role">
+            {% for key, label in USER_ROLES.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Crea utente</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "shared/base.html" %}
+{% import "shared/macros.html" as m %}
+{% block title %}Profilo{% endblock %}
+{% block main_class %}form-page{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ user.display_name }}</h1><div class="sub mono">{{ user.email }}</div></div>
+</div>
+
+<div class="card">
+  <h2><span>Nome e cognome
+    {{ m.info("È il nome che compare nella barra e firma le voci registrate nello storico degli strumenti. Scrivilo per esteso, così resta comprensibile anche quando lavorano più persone.") }}
+  </span></h2>
+  <div class="card-body">
+    <form method="post" action="/admin/profilo/nome">
+      <div class="field">
+        <label for="full_name">Nome e cognome</label>
+        <input id="full_name" name="full_name" value="{{ user.full_name }}"
+               maxlength="120" required autocomplete="name">
+      </div>
+      <button class="btn btn-primary" type="submit">Aggiorna nome</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span>Cambia password
+    {{ m.info("Per cambiarla devi inserire quella attuale. La nuova password deve avere almeno 8 caratteri; se l'hai dimenticata, chiedi a un amministratore di reimpostarla.") }}
+  </span></h2>
+  <div class="card-body">
+    <form method="post" action="/admin/profilo/password">
+      <div class="field">
+        <label for="current_password">Password attuale</label>
+        <input id="current_password" name="current_password" type="password" required autocomplete="current-password">
+      </div>
+      <div class="field">
+        <label for="new_password">Nuova password <span class="muted">(min 8 caratteri)</span></label>
+        <input id="new_password" name="new_password" type="password" minlength="8" required autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label for="confirm_password">Conferma nuova password</label>
+        <input id="confirm_password" name="confirm_password" type="password" minlength="8" required autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" type="submit">Aggiorna password</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

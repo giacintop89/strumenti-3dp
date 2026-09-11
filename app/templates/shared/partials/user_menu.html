@@ -1,0 +1,23 @@
+{# L'avatar con le iniziali, e sotto i comandi della propria sessione.
+
+   «Esci» resta una form POST anche dentro la tendina: il logout cambia stato
+   sul server, e un <a> lo renderebbe raggiungibile da un prefetch del browser
+   o da un'immagine remota. L'aspetto del menu non vale una GET distruttiva. #}
+<div class="menu-wrap">
+  <button type="button" class="user-btn" data-menu="menu-utente"
+          aria-haspopup="true" aria-expanded="false">
+    <span class="avatar" aria-hidden="true">{{ user.display_name | iniziali }}</span>
+    {# Due nomi e non uno tagliato dal CSS: «Giacinto Pappalardo» accorciato a
+       forza diventa «Giacinto Pappal…», che sul telefono e' piu' lungo del nome
+       proprio e dice meno. app.css ne mostra uno solo per volta. #}
+    <span class="user-name">{{ user.display_name }}</span>
+    <span class="user-first">{{ user.display_name | nome_breve }}</span>
+  </button>
+  <div class="menu-panel" id="menu-utente" hidden>
+    <div class="menu-title">{{ user.email }}</div>
+    <a href="/admin/profilo">Profilo</a>
+    {% if user.is_admin %}<a href="/admin/utenti">Utenti <span class="badge info">admin</span></a>{% endif %}
+    <div class="menu-sep"></div>
+    <form method="post" action="/logout"><button class="btn btn-sm" type="submit">Esci</button></form>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+{# I nove puntini: le altre app che girano su questo Pi. La lista sta in
+   Settings.app_aziendali, non qui, cosi' le quattro app dicono le stesse cose e
+   una porta che cambia si corregge in un posto solo. L'indirizzo lo compone
+   `tool_aziendali()` in templating.py sull'host di questa richiesta: da una
+   VPN, `pi5studio.local` non risolve.
+
+   Il menu si apre in JavaScript (menus.js). Senza JavaScript il bottone non
+   fa nulla: e' una scorciatoia fra applicazioni, non un comando di questa,
+   e nessuna funzione di Strumenti 3DP passa di qui. #}
+<div class="menu-wrap">
+  <button type="button" class="btn icon-btn" data-menu="tool-aziendali"
+          title="Tool aziendali" aria-label="Tool aziendali"
+          aria-haspopup="true" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="5" cy="5" r="2" /><circle cx="12" cy="5" r="2" /><circle cx="19" cy="5" r="2" />
+      <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+      <circle cx="5" cy="19" r="2" /><circle cx="12" cy="19" r="2" /><circle cx="19" cy="19" r="2" />
+    </svg>
+  </button>
+  <div class="menu-panel" id="tool-aziendali" hidden>
+    <div class="menu-title">Tool aziendali</div>
+    {% for app in tool_aziendali %}
+      <a href="{{ app.url }}"{% if not app.corrente %} target="_blank" rel="noreferrer"{% endif %}>
+        <span>{{ app.nome }}</span>
+        {% if app.corrente %}<span class="badge ok">qui</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</div>

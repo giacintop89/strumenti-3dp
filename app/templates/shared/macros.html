@@ -1,0 +1,65 @@
+{#
+  Le macro condivise. La prima e per ora l'unica arriva da
+  `tgest/app/templates/macros.html`: il componente e' gia' in `app.css`, che qui
+  e' una copia di quello di tgest, quindi la macro si copia invece di
+  reinventarla e le due app spiegano un campo allo stesso modo.
+#}
+
+{% macro info(text, align="start") -%}
+{#
+  La spiegazione di un campo, dietro una ⓘ.
+
+  E' un <button> e non un `title=`: il tooltip nativo del browser non compare
+  al tocco, e questa app si usa su un tablet in officina. Un bottone prende il
+  fuoco al tap, e `.info:focus .info-bubble` lo apre come farebbe l'hover.
+
+  `type="button"` non e' decorativo: dentro un <form> un <button> senza tipo e'
+  un submit, e chiedere una spiegazione manderebbe il modulo.
+#}
+<button type="button" class="info{{ ' info--end' if align == 'end' }}"
+        aria-label="Informazioni: {{ text }}">
+  <span class="info-icon" aria-hidden="true">i</span>
+  <span class="info-bubble" role="tooltip">{{ text }}</span>
+</button>
+{%- endmacro %}
+
+{% macro sort_th(sort, key, label, class="") -%}
+{% set state = sort.state(key) %}
+<th{% if class %} class="{{ class }}"{% endif %}{% if state %} aria-sort="{{ 'descending' if state == 'desc' else 'ascending' }}"{% endif %}>
+  <a class="sort{{ ' sort-on' if state }}" href="{{ sort.href(key) }}">{{ label }}<span class="sort-arrow" aria-hidden="true">{{ '▼' if state == 'desc' else ('▲' if state else '') }}</span></a>
+</th>
+{%- endmacro %}
+
+{% macro sort_bar(sort, options) -%}
+<div class="sort-bar"><span class="sort-bar-label">Ordina</span>
+  {% for key, label in options %}{% set state = sort.state(key) %}
+  <a class="sort{{ ' sort-on' if state }}" href="{{ sort.href(key) }}">{{ label }}<span class="sort-arrow" aria-hidden="true">{{ '▼' if state == 'desc' else ('▲' if state else '') }}</span></a>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro campo(c, valori) -%}
+{#
+  Un parametro. L'etichetta, l'unità di misura e la spiegazione vengono da
+  `CAMPI` in `app/presets.py`: sono descritti in un posto solo, e il modulo, i
+  preset e la guida disegnano tutti e tre la stessa cosa.
+
+  `inputmode="decimal"` e non `type="number"`: in officina si scrive su un
+  tablet, la tastiera numerica deve uscire, e `type="number"` su Android
+  rifiuta la virgola — che è come si scrive un decimale qui. `parse_float`
+  accetta entrambe le forme.
+#}
+<div class="field">
+  <label for="{{ c.nome }}">{{ c.etichetta }}{% if c.unita %} ({{ c.unita }}){% endif %}{{ info(c.aiuto) }}</label>
+  {%- if c.tipo == "select" %}
+  <select id="{{ c.nome }}" name="{{ c.nome }}">
+    {%- for valore, testo in c.scelte %}
+    <option value="{{ valore }}"{{ ' selected' if valori[c.nome]|string == valore }}>{{ testo }}</option>
+    {%- endfor %}
+  </select>
+  {%- else %}
+  <input id="{{ c.nome }}" name="{{ c.nome }}" inputmode="decimal"
+         value="{{ valori[c.nome] }}" autocomplete="off">
+  {%- endif %}
+</div>
+{%- endmacro %}

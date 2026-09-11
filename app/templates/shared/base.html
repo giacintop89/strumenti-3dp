@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Strumenti 3DP{% endblock %} · Strumenti 3DP</title>
+  <link rel="stylesheet" href="/static/app.css?v={{ ASSET_VERSION }}">
+  <script>
+    // Il comando «Indietro» e' un vero collegamento alla home che questo
+    // trasforma in un passo di cronologia. Torna indietro solo se la pagina
+    // precedente era nostra: su un indirizzo digitato o un segnalibro non c'e'
+    // niente di nostro alle spalle, quindi vale l'href e il bottone non e' mai
+    // un vicolo cieco.
+    function strumenti3dpGoBack(event) {
+      try {
+        if (document.referrer && new URL(document.referrer).origin === location.origin) {
+          event.preventDefault();
+          history.back();
+          return false;
+        }
+      } catch (e) { /* referrer malformato: si passa all'href */ }
+      return true;
+    }
+  </script>
+  <script src="/static/htmx.min.js" defer></script>
+  <script src="/static/menus.js?v={{ ASSET_VERSION }}" defer></script>
+  {% block extra_scripts %}{% endblock %}
+</head>
+<body>
+{% if user %}
+<header class="topbar no-print">
+  <div class="lead">
+    <a class="histnav back" href="/" rel="prev" aria-label="Indietro" title="Torna alla pagina precedente"
+       onclick="return strumenti3dpGoBack(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </a>
+    <a class="brand" href="/">Strumenti 3DP</a>
+  </div>
+  <div class="nav-scroll">
+  <nav>
+    {% set path = request.path %}
+    {% if path != '/' %}
+    <a href="/" class="nav-home">Home</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    {% endif %}
+    {# Quando arriva il primo strumento, questo è il punto dove mettere
+       un'etichetta col suo nome — vedi shared/base.html di strumenti-cnc. #}
+    {% block tool_tabs %}{% endblock %}
+  </nav>
+  </div>
+  <div class="session">
+    {% include "shared/partials/app_switcher.html" %}
+    {% include "shared/partials/user_menu.html" %}
+  </div>
+</header>
+{% block subnav %}{% endblock %}
+{% endif %}
+
+{# Le pagine che sono solo un modulo dichiarano `form-page`, che stringe la
+   colonna: vedi app.css. #}
+<main class="{% block main_class %}{% endblock %}">
+  {% if flashes %}
+    <div class="no-print">
+    {% for item in flashes %}
+      <div class="flash {{ item.level }}">{{ item.message }}</div>
+    {% endfor %}
+    </div>
+  {% endif %}
+  {# Un blocco, non una riga fissa: la pagina d'accesso lo svuota e ridisegna
+     lo stesso errore dentro la card, dove sta il modulo che l'ha causato. #}
+  {% block page_error %}{% if error %}<div class="flash error no-print">{{ error }}</div>{% endif %}{% endblock %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
