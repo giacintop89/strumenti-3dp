@@ -22,11 +22,9 @@ class Settings(BaseSettings):
     # vive sulla rete locale e attraverso una VPN non risolve. L'host giusto è
     # quello da cui la richiesta è arrivata, e lo sa il server a ogni richiesta.
     app_aziendali: list[dict[str, object]] = [
-        {"nome": "Gestionale azienda", "porta": 8080},
-        {"nome": "Note condivise", "porta": 8082},
-        {"nome": "Scanner bandi", "porta": 8081},
-        {"nome": "Strumenti CNC", "porta": 8083},
-        {"nome": "Strumenti 3DP", "porta": 8084, "corrente": True},
+        {"nome": "Scanner bandi", "porta": 8083},
+        {"nome": "Strumenti CNC", "porta": 8084},
+        {"nome": "Strumenti 3DP", "porta": 8085, "corrente": True},
     ]
 
     # Marca il cookie di sessione `Secure`. Va acceso solo quando ogni strada

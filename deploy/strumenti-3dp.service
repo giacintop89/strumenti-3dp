@@ -9,11 +9,11 @@ User=giacintop89
 Group=giacintop89
 WorkingDirectory=/home/giacintop89/Repositories/strumenti-3dp
 Environment=STRUMENTI_3DP_HOST=0.0.0.0
-Environment=STRUMENTI_3DP_PORT=8084
+Environment=STRUMENTI_3DP_PORT=8085
 EnvironmentFile=-/home/giacintop89/Repositories/strumenti-3dp/config/.env
 # Un worker solo: SQLite serializza le scritture comunque, e a questa scala
 # worker in più non comprano niente.
-# Porta 8084: era svg2cam, ora libera e assegnata a Strumenti 3DP.
+# Porta 8085: assegnata a Strumenti 3DP.
 # Gunicorn accetta le intestazioni del proxy soltanto dagli indirizzi indicati;
 # il default è 127.0.0.1, cioè Caddy sullo stesso Pi.
 ExecStart=/home/giacintop89/Repositories/strumenti-3dp/.venv/bin/gunicorn \
